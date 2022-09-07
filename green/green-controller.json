@@ -1,37 +1,56 @@
 {
-   "kind":"ReplicationController",
-   "apiVersion":"v1",
-   "metadata":{
-      "name":"green",
-      "labels":{
-         "app":"green"
-      }
+   "kind": "ReplicationController",
+   "apiVersion": "v1",
+   "metadata": {
+       "name": "green",
+       "labels": {
+           "app": "green"
+       }
    },
-   "spec":{
-      "replicas":1,
-      "selector":{
-         "app":"green"
-      },
-      "template":{
-         "metadata":{
-            "labels":{
-               "app":"green"
-            }
-         },
-         "spec":{
-            "containers":[
-               {
-                  "name":"green",
-                  "image":"andresaaap/testgreenimage",
-                  "ports":[
-                     {
-                        "name":"http-server",
-                        "containerPort":80
-                     }
-                  ]
+   "spec": {
+       "replicas": 1,
+       "selector": {
+           "app": "green"
+       },
+       "template": {
+           "metadata": {
+               "labels": {
+                   "app": "green"
                }
-            ]
-         }
-      }
+           },
+           "spec": {
+               "containers": [{
+                       "name": "green",
+                       "image": "alias64/blueimagedeploy",
+                       "ports": [{
+                               "name": "http-server",
+                               "containerPort": 80
+                           }
+                       ]
+                   }
+               ]
+           }
+       }
+   }
+}
+{
+   "kind": "Service",
+   "apiVersion": "v1",
+   "metadata": {
+       "name": "deploybluegreen",
+       "labels": {
+           "app": "deploybluegreen"
+       }
+   },
+   "spec": {
+       "ports": [{
+               "port": 8000,
+               "targetPort": 80
+           }
+       ],
+       "selector": {
+           "app": "blue"
+       },
+       "type": "LoadBalancer"
    }
 }

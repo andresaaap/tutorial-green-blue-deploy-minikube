@@ -6,13 +6,15 @@
 # Step 1:
 # Create dockerpath
 # dockerpath=<your docker ID/path>
-dockerpath=testgreenimage
+dockerpath=greenimagedeploy
 
 # Step 2:  
 # Authenticate & tag
+docker login --username alias64
+#docker  $dockerpath
+docker tag greenimagedeploy alias64/greenimagedeploy
 echo "Docker ID and Image: $dockerpath"
-docker login --username andresaaap
-docker tag testgreenimage andresaaap/testgreenimage
+
 # Step 3:
 # Push image to a docker repository
-docker push andresaaap/testgreenimage
+docker push alias64/greenimagedeploy
