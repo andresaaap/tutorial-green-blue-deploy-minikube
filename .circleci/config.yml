@@ -2,7 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
-version: '2.1'
+version: 2.1
 orbs:
   aws-eks: circleci/aws-eks@<<pipeline.parameters.dev-orb-version>>
   kubernetes: circleci/kubernetes@0.4.0
