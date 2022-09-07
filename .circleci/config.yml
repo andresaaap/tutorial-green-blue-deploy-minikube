@@ -40,7 +40,7 @@ jobs:
       - run:
           name: run lint for blue deployment
           command: |
-            . capostoneenv/bin/activate
+            . .capstoneenv/bin/activate
             cd blue
             # Install hadolint
             wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
@@ -52,7 +52,7 @@ jobs:
       - run:
           name: run lint for green deployment
           command: |
-            . capostoneenv/bin/activate
+            . .capstoneenv/bin/activate
             cd green
             # Install hadolint
             wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
@@ -77,7 +77,7 @@ jobs:
       - run:
           name: Build blue docker container
           command: |
-            . .capostoneenv/bin/activate
+            . .capstoneenv/bin/activate
             cd blue
             docker build --tag=alias64/$IMAGE_NAME:blue .
             docker login -u alias64 
@@ -86,7 +86,7 @@ jobs:
       - run:
           name: Build green docker container
           command: |
-            . .capostoneenv/bin/activate
+            . .capstoneenv/bin/activate
             cd green
             docker build --tag=alias64/$IMAGE_NAME:green .
             docker login -u alias64 
