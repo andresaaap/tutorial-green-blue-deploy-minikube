@@ -26,8 +26,8 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            python3 -m venv .capstoneenv
-            . .capstoneenv/bin/activate
+            python3 -m venv capstoneenv
+            . capstoneenv/bin/activate
             pip install --no-cache-dir -r requirements.txt
             
       - save_cache:
@@ -39,12 +39,12 @@ jobs:
       - run:
           name: run lint for blue deployment
           command: |
-            . .capstoneenv/bin/activate
+            . capstoneenv/bin/activate
             cd blue
             make install
             # Install hadolint
             wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
-            #chmod u+x /bin/hadolint            
+            chmod u+x /bin/hadolint            
             #./hadolint Dockerfile
             #pylint --disable=R,C,W1203,W1202 myCapstone_helloworld.py
             #make lint
@@ -52,7 +52,7 @@ jobs:
       - run:
           name: run lint for green deployment
           command: |
-            . .capstoneenv/bin/activate
+            . capstoneenv/bin/activate
             cd green
             # Install hadolint
             wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
@@ -69,15 +69,15 @@ jobs:
       - run:
           name: Setup python virtual environment
           command: |
-            python3 -m venv .capstoneenv
-            . .capstoneenv/bin/activate
+            python3 -m venv capstoneenv
+            . capstoneenv/bin/activate
             pip install --no-cache-dir -r requirements.txt
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
           name: Build blue docker container
           command: |
-            . .capstoneenv/bin/activate
+            . capstoneenv/bin/activate
             cd blue
             docker build --tag=alias64/$IMAGE_NAME:blue .
             docker login -u alias64 
@@ -86,7 +86,7 @@ jobs:
       - run:
           name: Build green docker container
           command: |
-            . .capstoneenv/bin/activate
+            . capstoneenv/bin/activate
             cd green
             docker build --tag=alias64/$IMAGE_NAME:green .
             docker login -u alias64 
