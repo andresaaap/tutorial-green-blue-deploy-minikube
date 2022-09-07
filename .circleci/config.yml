@@ -3,10 +3,6 @@
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
 Version: 2.1
-<<<<<<< HEAD
-=======
-
->>>>>>> 575278fcc2b5b8a86d93a4a2a85212701f810bad
 orbs:
   aws-cli: circleci/aws-cli@2.0.3  
   aws-eks: circleci/aws-eks@2.2.0  
