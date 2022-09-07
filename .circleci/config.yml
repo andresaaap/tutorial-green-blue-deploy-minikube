@@ -41,11 +41,11 @@ jobs:
           command: |
             . .capstoneenv/bin/activate
             cd blue
-            #make install
+            make install
             # Install hadolint
             wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
             chmod +x /bin/hadolint            
-            hadolint Dockerfile
+            #./hadolint Dockerfile
             pylint --disable=R,C,W1203,W1202 capstone_hello_world.py
             make lint
       # run lint
