@@ -3,6 +3,10 @@
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
 Version: 2.1
+<<<<<<< HEAD
+=======
+
+>>>>>>> 575278fcc2b5b8a86d93a4a2a85212701f810bad
 orbs:
   aws-cli: circleci/aws-cli@2.0.3  
   aws-eks: circleci/aws-eks@2.2.0  
@@ -39,19 +43,20 @@ jobs:
       - run:
           name: run lint for blue deployment
           command: |
-            . capostoneenv/bin/activate
+            . .capstoneenv/bin/activate
             cd blue
+            #make install
             # Install hadolint
             wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
             chmod +x /bin/hadolint            
-            ./hadolint Dockerfile
+            hadolint Dockerfile
             pylint --disable=R,C,W1203,W1202 capstone_hello_world.py
             make lint
       # run lint
       - run:
           name: run lint for green deployment
           command: |
-            . capostoneenv/bin/activate
+            . .capstoneenv/bin/activate
             cd green
             # Install hadolint
             wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
@@ -76,7 +81,7 @@ jobs:
       - run:
           name: Build blue docker container
           command: |
-            . .capostoneenv/bin/activate
+            . .capstoneenv/bin/activate
             cd blue
             docker build --tag=alias64/$IMAGE_NAME:blue .
             docker login -u alias64 
@@ -85,7 +90,7 @@ jobs:
       - run:
           name: Build green docker container
           command: |
-            . .capostoneenv/bin/activate
+            . .capstoneenv/bin/activate
             cd green
             docker build --tag=alias64/$IMAGE_NAME:green .
             docker login -u alias64 
