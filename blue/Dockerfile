@@ -13,7 +13,7 @@ COPY . myCapstone_helloworld.py /app/
 RUN pip install --upgrade pip &&\
     pip install --trusted-host pypi.python.org -r requirements.txt
 
-# hadolint ignore=DL3013
+hadolint ignore=DL3013
 
 ## Step 4:
 # Expose port 80
