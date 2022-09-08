@@ -206,7 +206,7 @@ workflows:
           cluster-name: eks-deploy
           requires:
             - create-eks-cluster
-      - delete-eks-cluster:
-          cluster-name: eks-deploy
-          requires:
-            - test-eks-cluster
+#      - delete-eks-cluster:
+#          cluster-name: eks-deploy
+#          requires:
+#            - test-eks-cluster
