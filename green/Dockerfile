@@ -11,7 +11,7 @@ COPY . myCapstone_helloworld.py /app/
 ## Step 3:
 # Install packages from requirements.txt
 RUN pip install --upgrade pip &&\
-    pip install --trusted-host pypi.python.or
+    pip install --trusted-host pypi.python.org -r requirements.txt
 
 # hadolint ignore=DL3013
 

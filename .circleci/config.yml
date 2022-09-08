@@ -48,16 +48,18 @@ jobs:
             #./hadolint Dockerfile
             #pylint --disable=R,C,W1203,W1202 myCapstone_helloworld.py
             #make lint
+            
       # run lint
       - run:
           name: run lint for green deployment
           command: |
             . capstoneenv/bin/activate
             cd green
+            #make install
             # Install hadolint
             sudo wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
             sudo chmod +x /bin/hadolint            
-            # ./hadolint Dockerfile
+            #./hadolint Dockerfile
             pylint --disable=R,C,W1203,W1202 myCapstone_helloworld.py
 
   build-docker-image:
@@ -79,19 +81,19 @@ jobs:
           command: |
             . capstoneenv/bin/activate
             cd blue
-            docker build --tag=alias64/$IMAGE_NAME:blue .
-            docker login -u alias64 
+            docker build --tag=alias64/blueimagedeploy:blue .
+            docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
             # Pusing docker images to git hub
-            docker push alias64/$IMAGE_NAME:blue
+            docker push alias64/blueimagedeploy:blue
       - run:
           name: Build green docker container
           command: |
             . capstoneenv/bin/activate
             cd green
-            docker build --tag=alias64/$IMAGE_NAME:green .
-            docker login -u alias64 
+            docker build --tag=alias64/blueimagedeploy:green .
+            docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD" 
             # Pusing docker images to git hub
-            docker push alias64/$IMAGE_NAME:green
+            docker push alias64/blueimagedeploy:green
 
   create-eks-cluster:
     docker:
