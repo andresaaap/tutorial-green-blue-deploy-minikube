@@ -90,10 +90,10 @@ jobs:
           command: |
             . capstoneenv/bin/activate
             cd green
-            docker build --tag=alias64/blueimagedeploy:green .
+            docker build --tag=alias64/greenimagedeploy:green .
             docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD" 
             # Pusing docker images to git hub
-            docker push alias64/blueimagedeploy:green
+            docker push alias64/imagedeploy:green
 
   create-eks-cluster:
     docker:
