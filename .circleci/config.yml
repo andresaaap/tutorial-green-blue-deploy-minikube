@@ -47,7 +47,7 @@ jobs:
             sudo chmod u+x /bin/hadolint            
             #./hadolint Dockerfile
             #pylint --disable=R,C,W1203,W1202 myCapstone_helloworld.py
-            #make lint
+            make lint
             
       # run lint
       - run:
