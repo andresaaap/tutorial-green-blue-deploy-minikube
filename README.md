@@ -1,4 +1,4 @@
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/ali-as64/tutorial-green-blue-deploy-minikube/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/ali-as64/tutorial-green-blue-deploy-minikube/tree/master)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/ali-as64/capstone/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/ali-as64/tutorial-green-blue-deploy-minikube/tree/master)
 # Capstone DevOps project
 To implement blue-green deployment
 
