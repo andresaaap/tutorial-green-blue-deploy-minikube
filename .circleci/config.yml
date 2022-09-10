@@ -195,17 +195,17 @@ workflows:
   default:
     jobs:
       - build-lint
-      - build-docker-image:
-          requires:
-            - build-lint
-      - create-eks-cluster:
-          cluster-name: eks-deploy
-          requires:
-            - build-docker-image
-      - test-eks-cluster:
-          cluster-name: eks-deploy
-          requires:
-            - create-eks-cluster
+#      - build-docker-image:
+#          requires:
+#            - build-lint
+#      - create-eks-cluster:
+#          cluster-name: eks-deploy
+#          requires:
+#            - build-docker-image
+#      - test-eks-cluster:
+#          cluster-name: eks-deploy
+#          requires:
+#            - create-eks-cluster
 #      - delete-eks-cluster:
 #          cluster-name: eks-deploy
 #          requires:
