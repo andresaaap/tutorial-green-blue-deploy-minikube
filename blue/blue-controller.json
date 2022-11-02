@@ -22,7 +22,7 @@
             "containers":[
                {
                   "name":"blue",
-                  "image":"andresaaap/testblueimage",
+                  "image":"alias64/blueimagedeploy",
                   "ports":[
                      {
                         "name":"http-server",
@@ -33,5 +33,28 @@
             ]
          }
       }
+   }
+}
+
+{
+   "kind":"Service",
+   "apiVersion":"v1",
+   "metadata":{
+      "name":"deploybluegreen",
+      "labels":{
+         "app":"deploybluegreen"
+      }
+   },
+   "spec":{
+      "ports": [
+         {
+           "port":8000,
+           "targetPort":80
+         }
+      ],
+      "selector":{
+         "app":"blue"
+      },
+      "type": "LoadBalancer"
    }
 }

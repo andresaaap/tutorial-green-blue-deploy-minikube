@@ -1,0 +1,212 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+Version: 2.1
+orbs:
+  aws-cli: circleci/aws-cli@2.0.3  
+  aws-eks: circleci/aws-eks@2.2.0  
+  kubernetes: circleci/kubernetes@0.4.0
+
+jobs:
+  build-lint:
+    docker:
+      # Use the same Docker base as the project
+      - image: circleci/python:3.7.3-stretch
+    working_directory: ~/repo
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv capstoneenv
+            . capstoneenv/bin/activate
+            pip install --no-cache-dir -r requirements.txt
+            
+      - save_cache:
+          paths:
+          - ./capstoneenv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+      # run lint!
+      - run:
+          name: run lint for blue deployment
+          command: |
+            . capstoneenv/bin/activate
+            cd blue
+            make install
+            # Install hadolint
+            sudo wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
+            sudo chmod u+x /bin/hadolint            
+            #./hadolint Dockerfile
+            pylint --disable=R,C,W1203,W1202 myCapstone_helloworld.py
+            #make lint
+            
+      # run lint
+      - run:
+          name: run lint for green deployment
+          command: |
+            . capstoneenv/bin/activate
+            cd green
+            #make install
+            # Install hadolint
+            sudo wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
+            sudo chmod +x /bin/hadolint            
+            #./hadolint Dockerfile
+            pylint --disable=R,C,W1203,W1202 myCapstone_helloworld.py
+
+  build-docker-image:
+    docker:
+      - image: circleci/python:3.7.3-stretch
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Setup python virtual environment
+          command: |
+            python3 -m venv capstoneenv
+            . capstoneenv/bin/activate
+            pip install --no-cache-dir -r requirements.txt
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build blue docker container
+          command: |
+            . capstoneenv/bin/activate
+            cd blue
+            docker build --tag=alias64/blueimagedeploy:blue .
+            docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+            # Pusing docker images to git hub
+            docker push alias64/blueimagedeploy:blue
+      - run:
+          name: Build green docker container
+          command: |
+            . capstoneenv/bin/activate
+            cd green
+            docker build --tag=alias64/greenimagedeploy:green .
+            docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD" 
+            # Pusing docker images to git hub
+            docker push alias64/greenimagedeploy:green
+
+  create-eks-cluster:
+    docker:
+      - image: 'cimg/python:3.10'
+    parameters:
+      cluster-name:
+        description: |
+          Name of the EKS cluster
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: Install the eksctl tool
+          command: |
+            if which eksctl > /dev/null; then
+              echo "eksctl is already installed"
+              exit 0
+            fi
+            mkdir -p eksctl_download
+            curl --silent --location --retry 5 "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" \
+              | tar xz -C eksctl_download
+            chmod +x eksctl_download/eksctl
+            SUDO=""
+            if [ $(id -u) -ne 0 ] && which sudo > /dev/null ; then
+              SUDO="sudo"
+            fi
+            $SUDO mv eksctl_download/eksctl /usr/local/bin/
+            rmdir eksctl_download
+      - aws-eks/create-cluster:
+          cluster-name: << parameters.cluster-name >>
+  test-eks-cluster:
+    docker:
+      - image: 'cimg/python:3.10'
+    parameters:
+      cluster-name:
+        description: |
+          Name of the EKS cluster
+        type: string
+    steps:
+      - checkout
+      - kubernetes/install:
+          kubectl-version: v1.22.0
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: << parameters.cluster-name >>
+      - run:
+          name: Deploy blue deployment in cluster
+          command: |
+            cd blue
+            ./run_kubernetes.sh
+      - run:
+          command: |
+            sleep 120 && kubectl get all && sleep 120
+          name: Test blue deployment in cluster
+      - run:
+          name: Deploy green deployment in cluster
+          command: |
+            cd green
+            ./run_kubernetes.sh
+      - run:
+          command: |
+            sleep 120 && kubectl get all && sleep 120
+          name: Test green deployment in cluster
+
+  delete-eks-cluster:
+    docker:
+      - image: 'cimg/python:3.10'
+    parameters:
+      cluster-name:
+        description: |
+          Name of the EKS cluster
+        type: string
+
+    steps:
+      - run:
+          name: Install the eksctl tool
+          command: |
+            if which eksctl > /dev/null; then
+              echo "eksctl is already installed"
+              exit 0
+            fi
+            mkdir -p eksctl_download
+            curl --silent --location --retry 5 "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" \
+              | tar xz -C eksctl_download
+            chmod +x eksctl_download/eksctl
+            SUDO=""
+            if [ $(id -u) -ne 0 ] && which sudo > /dev/null ; then
+              SUDO="sudo"
+            fi
+            $SUDO mv eksctl_download/eksctl /usr/local/bin/
+            rmdir eksctl_download
+      - aws-eks/delete-cluster:
+          cluster-name: << parameters.cluster-name >>
+# orbs:
+  # aws-eks: circleci/aws-eks@1.1.0
+  # kubernetes: circleci/kubernetes@0.4.0
+version: 2.1
+
+workflows:
+  default:
+    jobs:
+      - build-lint
+#      - build-docker-image:
+#          requires:
+#            - build-lint
+#      - create-eks-cluster:
+#          cluster-name: eks-deploy
+#          requires:
+#            - build-docker-image
+#      - test-eks-cluster:
+#          cluster-name: eks-deploy
+#          requires:
+#            - create-eks-cluster
+#      - delete-eks-cluster:
+#          cluster-name: eks-deploy
+#          requires:
+#            - test-eks-cluster
