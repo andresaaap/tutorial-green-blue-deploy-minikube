@@ -1,22 +1,14 @@
-{
-   "kind":"Service",
-   "apiVersion":"v1",
-   "metadata":{
-      "name":"bluegreenlb",
-      "labels":{
-         "app":"bluegreenlb"
-      }
-   },
-   "spec":{
-      "ports": [
-         {
-           "port":8000,
-           "targetPort":80
-         }
-      ],
-      "selector":{
-         "app":"green"
-      },
-      "type": "LoadBalancer"
-   }
-}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: bluegreenlb
+  labels:
+    app: bluegreenlb
+spec:
+  ports:
+  - port: 8000
+    targetPort: 80
+  selector:
+    app: green
+  type: LoadBalancer
